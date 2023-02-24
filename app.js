@@ -17,6 +17,8 @@ router.post('/update/:id', async ctx => {
 	
 	const date = ctx.params.id;
 	
+	console.log(date)
+	
     const page = await browser.newPage()
 	await page.goto('https://btfscores.com/', {
 		waitUntil: "domcontentloaded"
