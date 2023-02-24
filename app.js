@@ -10,7 +10,11 @@ router.post('/update/:id', async ctx => {
   ctx.status = 200
   const start = async () => {
     const browser = await puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      headless: true,
+	  args: ['--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--single-process'],
     })
 	
 	console.log(`START`)
@@ -20,12 +24,9 @@ router.post('/update/:id', async ctx => {
 	console.log(date)
 	
     const page = await browser.newPage()
-	await page.goto('https://btfscores.com/', {
-		waitUntil: "domcontentloaded"
-	});
-	await page.hover('#today')
-	await page.waitForSelector('.ddDate')
-	await page.click('li[data-date="'+date+'"]')
+	await page.goto('https://btfscores.com/');
+	
+	await page.waitForTimeout(5000);
 	
 	const data = await page.evaluate(() => {
 		const result = []
@@ -62,10 +63,7 @@ router.post('/update/:id', async ctx => {
 		
 		return result
     })
-	
-	console.log(`END`)
-	
-    fs.writeFile('data.json', JSON.stringify(data), 'utf-8', () => console.log(`Writing data.json`))
+
     await browser.close()
     return data
   }
