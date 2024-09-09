@@ -31,11 +31,11 @@ router.post('/update/:id', async ctx => {
 	console.log('a');
 	
 	// Step 1: Hover over the #today element to trigger the dropdown
-  console.log('Hovering over #today element...');
-  await page.hover('#today');
+  console.log('Hovering over #btabDate element...');
+  await page.hover('#btabDate');
 
   // Step 2: Add a small delay to ensure the hover has triggered the dropdown
-  await page.waitForTimeout(1500); // Give more time after hover
+  await page.waitForTimeout(2000); // Give more time after hover
   console.log('Hover complete, waiting for dropdown to become visible...');
 
   // Step 3: Wait for the dropdown UL to become visible and verify it's displayed
@@ -47,28 +47,11 @@ router.post('/update/:id', async ctx => {
   }
   console.log('Dropdown is visible.');
 
-  // Step 4: Check if the target LI element is available and visible
-  const liExists = await page.evaluate(() => {
-    const liElement = document.querySelector('li[data-date="2024-09-08"]');
-    return !!liElement;
-  });
-  if (!liExists) {
-    console.error('Target LI element with data-date="2024-09-08" not found.');
-    await browser.close();
-    return;
-  }
-  console.log('Target LI element is found.');
+	await page.waitForSelector('[data-date="'+date+'"]');
+	const btnAction = await page.$('[data-date="'+date+'"]');
+	
+	btnAction.click();
 
-  // Step 5: Scroll the target element into view and click it
-  await page.evaluate(() => {
-    const liElement = document.querySelector('li[data-date="'+date+'"]');
-    if (liElement) {
-      liElement.scrollIntoView();  // Ensure it is in the viewport
-      liElement.click();
-      console.log('Target LI element clicked.');
-    }
-  });
-	  
 	await page.waitForTimeout(5000);
 	
 	const data = await page.evaluate(() => {
