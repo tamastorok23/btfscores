@@ -26,7 +26,29 @@ router.post('/update/:id', async ctx => {
     const page = await browser.newPage()
 	await page.goto('https://btfscores.com/');
 	
-	await page.waitForTimeout(5000);
+	await page.waitForTimeout(2000);
+	
+	console.log('a');
+	
+	// Step 1: Hover over the #today element to trigger the dropdown
+  await page.hover('#today');
+  console.log('Hovered over the Today element to show dropdown.');
+
+  // Step 2: Wait for the dropdown UL to become visible
+  await page.waitForSelector('ul.ddDate', { visible: true });
+
+  // Step 3: Click the LI element with data-date="2024-09-08"
+  await page.evaluate(() => {
+    const liElement = document.querySelector('li[data-date="'+date+'"]');
+    if (liElement) {
+		console.log('Date element clicked.');
+      liElement.click();
+    } else {
+      console.log('Date element not found.');
+    }
+  });
+	  
+	await page.waitForTimeout(3000);
 	
 	const data = await page.evaluate(() => {
 		const result = []
@@ -64,11 +86,10 @@ router.post('/update/:id', async ctx => {
 		return result
     })
 
-    await browser.close()
-    return data
+    //await browser.close()
+    //return data
   }
   ctx.body = await start()
-  // ctx.body = start()
 })
 
 app.use(router.routes())
