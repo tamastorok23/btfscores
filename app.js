@@ -46,11 +46,10 @@ router.post('/update/:id', async ctx => {
 
   // Step 5: Click the LI element with data-date="2024-09-08"
   await page.evaluate(() => {
-    const liElement = document.querySelector('li[data-date="2024-09-08"]');
+    const liElement = document.querySelector('li[data-date="'+date+'"]');
     if (liElement) {
 	console.log('Date element clicked.');
       liElement.click();
-      console.log('Date element clicked.');
     } else {
       console.log('Date element not found.');
     }
