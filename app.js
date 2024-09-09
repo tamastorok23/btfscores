@@ -31,27 +31,41 @@ router.post('/update/:id', async ctx => {
 	console.log('a');
 	
 	// Step 1: Hover over the #today element to trigger the dropdown
-	await page.hover('#today');
-  console.log('Hovered over the Today element to show dropdown.');
-  
-  // Step 2: Add a short delay after hover to allow the dropdown to appear
-  await page.waitForTimeout(1000);  // Adding 1 second delay (adjust as needed)
+  console.log('Hovering over #today element...');
+  await page.hover('#today');
 
-  // Step 3: Wait for the dropdown UL to become visible
-  await page.waitForSelector('ul.ddDate', { visible: true });
+  // Step 2: Add a small delay to ensure the hover has triggered the dropdown
+  await page.waitForTimeout(1500); // Give more time after hover
+  console.log('Hover complete, waiting for dropdown to become visible...');
+
+  // Step 3: Wait for the dropdown UL to become visible and verify it's displayed
+  const dropdownVisible = await page.waitForSelector('ul.ddDate', { visible: true, timeout: 5000 }).catch(() => null);
+  if (!dropdownVisible) {
+    console.error('Dropdown did not become visible.');
+    await browser.close();
+    return;
+  }
   console.log('Dropdown is visible.');
 
-  // Step 4: Add another small delay to ensure that the list is ready for interaction
-  await page.waitForTimeout(500);  // Adding a half-second delay before clicking
+  // Step 4: Check if the target LI element is available and visible
+  const liExists = await page.evaluate(() => {
+    const liElement = document.querySelector('li[data-date="2024-09-08"]');
+    return !!liElement;
+  });
+  if (!liExists) {
+    console.error('Target LI element with data-date="2024-09-08" not found.');
+    await browser.close();
+    return;
+  }
+  console.log('Target LI element is found.');
 
-  // Step 5: Click the LI element with data-date="2024-09-08"
+  // Step 5: Scroll the target element into view and click it
   await page.evaluate(() => {
     const liElement = document.querySelector('li[data-date="'+date+'"]');
     if (liElement) {
-	console.log('Date element clicked.');
+      liElement.scrollIntoView();  // Ensure it is in the viewport
       liElement.click();
-    } else {
-      console.log('Date element not found.');
+      console.log('Target LI element clicked.');
     }
   });
 	  
