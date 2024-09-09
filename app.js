@@ -86,8 +86,8 @@ router.post('/update/:id', async ctx => {
 		return result
     })
 
-    //await browser.close()
-    //return data
+    await browser.close()
+    return data
   }
   ctx.body = await start()
 })
